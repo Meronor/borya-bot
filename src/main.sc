@@ -163,7 +163,7 @@ theme: /
             varName = age
             html = 
             htmlEnabled = false
-            then = /City
+            then = /correction_1
             actions = 
 
     state: City
@@ -185,6 +185,7 @@ theme: /
             actions = 
 
     state: Experiance
+        a: Какой у вас опыт работы?
         buttons:
             "Нет опыта" -> /Test_low
             "Меньше полугода" -> /Test_low
@@ -193,25 +194,25 @@ theme: /
             "Более 10 лет" -> /send_resume
         script:
             var i = 0
-            while (true) {
-                i ++;
-                $temp.res = $integration.googleSheets.readDataFromCells(
-            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-            "Лист1",
-            ["A" + i.toString(), "C" + i.toString()]
-                );
-                if (typeof($temp.res[0]) === "undefined") {
-            $integration.googleSheets.writeDataToCells(
+                while (true) {
+            i ++;
+            $temp.res = $integration.googleSheets.readDataFromCells(
                 "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
                 "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
                 "Лист1",
-                [{values: [$session.name, $session.age, $session.number, $session.email
-                , $session.city, $session.resume], cell: "A" + i.toString()}]
+                ["A" + i.toString(), "C" + i.toString()]
             );
-            break;
-                }
+            if (typeof($temp.res[0]) === "undefined") {
+                $integration.googleSheets.writeDataToCells(
+            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+            "Лист1",
+            [{values: [$session.name, $session.age, $session.number, $session.email
+            , $session.city, $session.resume], cell: "A" + i.toString()}]
+                );
+                break;
             }
+                }
 
     state: dont know
         InputText: 
@@ -364,3 +365,33 @@ theme: /
             htmlEnabled = false
             then = /correction
             actions = 
+
+    state: correction_1
+        script:
+            if (/^[0-9]*$/g.test($session.age)){
+                if (parseInt($session.age) >= 16 && parseInt($session.age) <= 100){
+            $session.act = "correct"
+            }
+                else {
+            $session.act = "young"
+            }
+                }
+            else {
+                $session.act = "not int"
+            }
+        if: $session.act == "correct"
+            go!: /City
+        if: $session.act == "young"
+            go!: /young_1
+        if: $session.act == "not int"
+            go!: /Not Int_1
+
+    state: young_1
+        a: Ваш возраст не подходит. Вам точно {{$session.age}}?
+        buttons:
+            "Да" -> /Russian
+            "Нет" -> /Age
+
+    state: Not Int_1
+        a: Введите число!
+        go!: /Age
