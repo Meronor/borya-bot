@@ -158,16 +158,12 @@ theme: /
             actions = 
 
     state: Age
-        InputNumber: 
+        InputText: 
             prompt = Сколько вам лет?
             varName = age
             html = 
             htmlEnabled = false
-            failureMessage = ["Ваш возраст не подходит для найма"]
-            failureMessageHtml = [""]
             then = /City
-            minValue = 16
-            maxValue = 100
             actions = 
 
     state: City
@@ -224,20 +220,27 @@ theme: /
             html = 
             htmlEnabled = false
             actions = 
-            then = /Age_1
-
-    state: Age_1
-        InputNumber: 
-            prompt = Сколько вам лет?
-            varName = age
-            html = 
-            htmlEnabled = false
-            failureMessage = ["Ваш возраст не подходит для найма"]
-            failureMessageHtml = [""]
             then = /Number_1
-            minValue = 16
-            maxValue = 100
-            actions = 
+
+    state: correction
+        script:
+            if (/^[0-9]*$/g.test($session.age)){
+            if (parseInt($session.age) >= 16 && parseInt($session.age) <= 100){
+                $session.act = "correct"
+                }
+            else {
+                $session.act = "young"
+                }
+            }
+                else {
+            $session.act = "not int"
+                }
+        if: $session.act == "correct"
+            go!: /City_1
+        if: $session.act == "young"
+            go!: /young
+        if: $session.act == "not int"
+            go!: /Not Int
 
     state: City_1
         InputText: 
@@ -264,23 +267,22 @@ theme: /
             while (true) {
                 i ++;
                 $temp.res = $integration.googleSheets.readDataFromCells(
-                    "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-                    "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-                    "Лист1",
-                    ["A" + i.toString(), "C" + i.toString()]
+            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+            "Лист1",
+            ["A" + i.toString(), "C" + i.toString()]
                 );
                 if (typeof($temp.res[0]) === "undefined") {
-                    $integration.googleSheets.writeDataToCells(
-                        "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-                        "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-                        "Лист1",
-                        [{values: [$session.name, $session.number, $session.email, $session.age, $session.city,
-                        $session.resume], cell: "A" + i.toString()}]
-                    );
-                    break;
+            $integration.googleSheets.writeDataToCells(
+                "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                "Лист1",
+                [{values: [$session.name, $session.number, $session.email, $session.age, $session.city,
+                $session.resume], cell: "A" + i.toString()}]
+            );
+            break;
                 }
             }
-            
 
     state: Error
         a: Error
@@ -325,7 +327,7 @@ theme: /
             varName = mail
             html = 
             htmlEnabled = false
-            then = /City_1
+            then = /Age_1
             actions = 
 
     state: Test_low
@@ -343,3 +345,22 @@ theme: /
         buttons:
             "Да" -> /Special
             "Нет" -> /Russian
+
+    state: young
+        a: Ваш возраст не подходит. Вам точно {{$session.age}}?
+        buttons:
+            "Да" -> /Russian
+            "Нет" -> /Age_1
+
+    state: Not Int
+        a: Введите число!
+        go!: /Age_1
+
+    state: Age_1
+        InputText: 
+            prompt = Сколько вам лет?
+            varName = age
+            html = 
+            htmlEnabled = false
+            then = /correction
+            actions = 
