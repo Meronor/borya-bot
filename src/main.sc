@@ -183,12 +183,26 @@ theme: /
     state: Experiance
         a: Где вы работали?
         script:
-            $integration.googleSheets.writeDataToCells(
+            var i = 0
+                while (true) {
+            i ++;
+            $temp.res = $integration.googleSheets.readDataFromCells(
                 "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
                 "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
                 "Лист1",
-                [{values: [$session.name, $session.age, $session.city, $session.resume], cell: "A2"}]
+                ["A" + i.toString(), "C" + i.toString()]
             );
+            if (typeof($temp.res[0]) === "undefined") {
+                $integration.googleSheets.writeDataToCells(
+            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+            "Лист1",
+            [{values: [$session.name, $session.age, $session.city,
+            $session.resume], cell: "A" + i.toString()}]
+                );
+                break;
+            }
+                }
 
     state: dont know
         InputText: 
@@ -229,19 +243,27 @@ theme: /
     state: Test
         a: Ответьте на пару вопросов, и я помогу вам с выбором специальности
         script:
-            $temp.res = $integration.googleSheets.readDataFromCells(
-            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-            "Лист1",
-            ["A1", "C1"]
+            var i = 0
+            while (true) {
+                i ++;
+                $temp.res = $integration.googleSheets.readDataFromCells(
+                    "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                    "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                    "Лист1",
+                    ["A" + i.toString(), "C" + i.toString()]
                 );
-            $integration.googleSheets.writeDataToCells(
-            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-            "Лист1",
-            [{values: [$session.name, $session.age, $session.city,
-            $session.resume, $temp.res[0].value], cell: "A4"}]
-        );
+                if (typeof($temp.res[0]) === "undefined") {
+                    $integration.googleSheets.writeDataToCells(
+                        "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                        "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                        "Лист1",
+                        [{values: [$session.name, $session.age, $session.city,
+                        $session.resume], cell: "A" + i.toString()}]
+                    );
+                    break;
+                }
+            }
+            
 
     state: Error
         a: Error
