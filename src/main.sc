@@ -289,7 +289,7 @@ state: Know_1
         a: Ответьте на пару вопросов, и я помогу вам с выбором специальности 
         script:
             $integration.googleSheets.writeDataToCells(
-            "5a2884cd-2e20-489f-851a-83446ec207c9",
+            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
             "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
             "Лист1",
             [{values: [$session.name, $session.age, $session.city, $session.resume], cell: "A2"}]
