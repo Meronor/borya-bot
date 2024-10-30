@@ -8,13 +8,16 @@ theme: /
         buttons:
             "Русский" -> /Russian
             "English" -> /English
+        event: noMatch || toState = "/Russian/NoMatch"
 
     state: Russian
-        a: Привет! Я чат-бот разработчиков команды "Be better".
-        a: Вы согласны на обработку ваших персональных данных?
+        a: Привет! Я чат-бот разработчиков команды "Be better". Вы можете задать мне вопрос. Или отправить свое резюме на нашу почту.
         buttons:
-            "Да" -> /Special
-            "Нет" -> /Russian
+            "Задать вопрос" -> /Ques
+            "Оставить заявку" -> /application
+
+        state: Error
+            a: Ошибка, сообщение не отправлено
 
         state: Hello
             intent: /sys/aimylogic/ru/hello
@@ -35,7 +38,8 @@ theme: /
                 $faq.pushReplies();
 
         state: noEmail
-            a: К сожалению, я ничем не можем Вам помочь. Чтобы узнать ответ на вопрос напишите нам на почту: office@park-kosa.ru
+            a: К сожалению, ничем не могу Вам помочь. Чтобы узнать ответ на ваш вопрос напишите нам на почту: slurm@kode.ru
+            go!: /Russian
 
         state: emailButtons
             a: Хотите чтобы я отправил ваш вопрос на почту службы поддержки?
@@ -63,7 +67,7 @@ theme: /
 
         state: email
             Email: 
-                destination = listopad053@gmail.com
+                destination = b.kisselev@gmail.com
                 subject = Вопрос бота
                 text = Email отправителя: {{$session.mail}} 
                     {{$session.question}}
@@ -72,7 +76,7 @@ theme: /
                     {{$session.question}}
                 htmlEnabled = false
                 okState = /Russian/email/success
-                errorState = 
+                errorState = /Russian/Error
 
             state: success
                 a: Спасибо за Ваш вопрос, письмо успешно отправлено, ожидайте ответа на почту в течение 2 часов
@@ -150,16 +154,20 @@ theme: /
             varName = name
             html = 
             htmlEnabled = false
-            then = /Age
+            then = /Number
             actions = 
 
     state: Age
-        InputText: 
+        InputNumber: 
             prompt = Сколько вам лет?
             varName = age
             html = 
             htmlEnabled = false
+            failureMessage = ["Ваш возраст не подходит для найма"]
+            failureMessageHtml = [""]
             then = /City
+            minValue = 16
+            maxValue = 100
             actions = 
 
     state: City
@@ -181,28 +189,33 @@ theme: /
             actions = 
 
     state: Experiance
-        a: Где вы работали?
+        buttons:
+            "Нет опыта" -> /Test_low
+            "Меньше полугода" -> /Test_low
+            "Больше года" -> /send_resume
+            "Более 5 лет" -> /send_resume
+            "Более 10 лет" -> /send_resume
         script:
             var i = 0
-                while (true) {
-            i ++;
-            $temp.res = $integration.googleSheets.readDataFromCells(
-                "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-                "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-                "Лист1",
-                ["A" + i.toString(), "C" + i.toString()]
-            );
-            if (typeof($temp.res[0]) === "undefined") {
-                $integration.googleSheets.writeDataToCells(
+            while (true) {
+                i ++;
+                $temp.res = $integration.googleSheets.readDataFromCells(
             "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
             "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
             "Лист1",
-            [{values: [$session.name, $session.age, $session.city,
-            $session.resume], cell: "A" + i.toString()}]
+            ["A" + i.toString(), "C" + i.toString()]
                 );
-                break;
-            }
+                if (typeof($temp.res[0]) === "undefined") {
+            $integration.googleSheets.writeDataToCells(
+                "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                "Лист1",
+                [{values: [$session.name, $session.age, $session.number, $session.email
+                , $session.city, $session.resume], cell: "A" + i.toString()}]
+            );
+            break;
                 }
+            }
 
     state: dont know
         InputText: 
@@ -214,12 +227,16 @@ theme: /
             then = /Age_1
 
     state: Age_1
-        InputText: 
-            prompt = Сколько вам лет
+        InputNumber: 
+            prompt = Сколько вам лет?
             varName = age
             html = 
             htmlEnabled = false
-            then = /City_1
+            failureMessage = ["Ваш возраст не подходит для найма"]
+            failureMessageHtml = [""]
+            then = /Number_1
+            minValue = 16
+            maxValue = 100
             actions = 
 
     state: City_1
@@ -257,7 +274,7 @@ theme: /
                         "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
                         "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
                         "Лист1",
-                        [{values: [$session.name, $session.age, $session.city,
+                        [{values: [$session.name, $session.number, $session.email, $session.age, $session.city,
                         $session.resume], cell: "A" + i.toString()}]
                     );
                     break;
@@ -273,3 +290,56 @@ theme: /
         buttons:
             "Да" -> /Know
             "Нет" -> /dont know
+        event: noMatch || toState = "/Russian/NoMatch"
+
+    state: Mail
+        InputText: 
+            prompt = Укажите вашу почту
+            varName = mail
+            html = 
+            htmlEnabled = false
+            then = /Age
+            actions = 
+
+    state: Number
+        InputText: 
+            prompt = Укажите ваш телефон
+            varName = number
+            html = 
+            htmlEnabled = false
+            then = /Mail
+            actions = 
+
+    state: Number_1
+        InputText: 
+            prompt = Укажите ваш телефон
+            varName = number
+            html = 
+            htmlEnabled = false
+            then = /Mail_1
+            actions = 
+
+    state: Mail_1
+        InputText: 
+            prompt = Укажите вашу почту
+            varName = mail
+            html = 
+            htmlEnabled = false
+            then = /City_1
+            actions = 
+
+    state: Test_low
+        a: Ссылка на тест
+
+    state: send_resume
+        a: Спасибо, Ваша заявка в рассмотрении!
+
+    state: Ques
+        a: Можете задать любой вопрос
+        event: noMatch || onlyThisState = false, toState = "/Russian/NoMatch"
+
+    state: application
+        a: Вы согласны на обработку персональных данных?
+        buttons:
+            "Да" -> /Special
+            "Нет" -> /Russian
