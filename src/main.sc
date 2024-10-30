@@ -207,7 +207,7 @@ theme: /
             "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
             "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
             "Лист1",
-            [{values: [$session.name, $session.age, $session.number, $session.email
+            [{values: [$session.name, $session.number, $session.email, $session.age
             , $session.city, $session.resume], cell: "A" + i.toString()}]
                 );
                 break;
