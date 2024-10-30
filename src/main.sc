@@ -226,36 +226,27 @@ theme: /
 
     state: Test
         a: Ответьте на пару вопросов, и я помогу вам с выбором специальности
+
         script:
-            var cell = "";
-            var i = 0;
-            $temp.res = $integration.googleSheets.readDataFromCells(
-                "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-                "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-                "Лист1",
-                ["A1"]);
-                
-            while ($temp.res[0].value != null) {
-                i ++; 
-                cell = "A" + i.toString()
+            var i = 1
+            while (true){
+                i ++;
                 $temp.res = $integration.googleSheets.readDataFromCells(
                 "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
                 "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
                 "Лист1",
-                [cell]);
+                ["A" + i.toString()]);
                 
-                if ($temp.res[0].value == null) {
-                    continue
-                    }
-                
-                else {
+                if (typeof($temp.res) != null) {
                     $integration.googleSheets.writeDataToCells(
                         "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
                         "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
                         "Лист1",
-                        [{values: [$session.name, $session.age, $session.city, $session.resume, $temp.res1[0].value], cell:  cell}]
-                        )}};
-
+                        [{values: [$session.name, $session.age, $session.city, $session.resume], cell:  "A" + i.toString()}]
+                        );
+                    break; 
+                    }};
+            
     state: Error
         a: Error
 
