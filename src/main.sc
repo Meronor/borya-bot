@@ -8,13 +8,13 @@ theme: /
         buttons:
             "Русский" -> /Russian
             "English" -> /English
-            "中國人" -> /Chinese
 
     state: Russian
         a: Привет! Я чат-бот разработчиков команды "Be better".
-        a: Вы знаете, какая специальность вам интересна?
-        intent: /Знаю  toState = "/Know"
-        intent: /Не знаю  toState = "/Know_1"
+        a: Вы согласны на обработку ваших персональных данных?
+        buttons:
+            "Да" -> /Special
+            "Нет" -> /Russian
 
         state: Hello
             intent: /sys/aimylogic/ru/hello
@@ -114,8 +114,9 @@ theme: /
                 then = /English/inputEmail
                 html = 
                 htmlEnabled = false
-                actions =
-state: inputEmail
+                actions = 
+
+        state: inputEmail
             InputText: 
                 prompt = Now please enter your e-mail to which you will receive a response
                 varName = mail
@@ -139,70 +140,6 @@ state: inputEmail
 
             state: success
                 a: Thank you for your question, the letter was sent successfully, expect a response by email within 2 hours
-
-    state: Chinese
-        a: 禮炮！ 我的名字是科蘇利亞！ 我是「Khalyavy ne budet」團隊開發人員的聊天機器人。 問一個你感興趣的問題
-
-        state: Hello
-            intent: /sys/aimylogic/zh/hello
-            a: 你好!
-
-        state: Bye
-            intent: /再見
-            a: 再見！
-
-        state: NoMatch
-            event: noMatch
-            a: 糟糕，您的問題不在常見問題清單中...
-            go!: /Chinese/emailButtons
-
-        state: KnowledgeBase
-            intentGroup: /KnowledgeBase
-            script:
-                $faq.pushReplies();
-
-        state: noEmail
-            a: 不幸的是，我無法幫助你任何事。 要找到您問題的答案，請透過電子郵件寫信給我們：office@park-kosa.ru
-
-        state: emailButtons
-            a: 您希望我將您的問題發送到支援電子郵件嗎？
-            buttons:
-                "是的" -> /Chinese/inputQuestion
-                "不" -> /Chinese/noEmail
-
-        state: inputQuestion
-            InputText: 
-                prompt = 請輸入您的問題
-                varName = question
-                then = /Chinese/inputEmail
-                html = 
-                htmlEnabled = false
-                actions = 
-
-        state: inputEmail
-            InputText: 
-                prompt = 現在請輸入您的電子郵件地址，您將收到回复
-                varName = mail
-                then = /Chinese/email
-                html = 
-                htmlEnabled = false
-                actions = 
-
-        state: email
-            Email: 
-                destination = listopad053@gmail.com
-                subject = Вопрос бота
-                text = Email отправителя: {{$session.mail}} 
-                    {{$session.question}}
-                files = []
-                html = Email отправителя: {{$session.mail}} 
-                    {{$session.question}}
-                htmlEnabled = false
-                okState = /Chinese/email/success
-                errorState = 
-
-            state: success
-                a: 感謝您的提問，信件已發送成功，預計2小時內透過電子郵件回覆
 
     state: NewState
         intent: /sys/aimylogic/ru/hello
@@ -236,6 +173,7 @@ state: inputEmail
             html = 
             htmlEnabled = false
             actions = 
+            then = /Резюме
 
     state: Резюме
         InputText: 
@@ -249,7 +187,8 @@ state: inputEmail
     state: Experiance
         a: Где вы работали?
         event: Match || toState = "./"
-state: Know_1
+
+    state: dont know
         InputText: 
             prompt = Как вас зовут?(Имя, Фамилия)
             varName = name
@@ -257,7 +196,7 @@ state: Know_1
             htmlEnabled = false
             actions = 
             then = /Age_1
-            
+
     state: Age_1
         InputText: 
             prompt = Сколько вам лет
@@ -286,14 +225,42 @@ state: Know_1
             actions = 
 
     state: Test
-        a: Ответьте на пару вопросов, и я помогу вам с выбором специальности 
+        a: Ответьте на пару вопросов, и я помогу вам с выбором специальности
         script:
-            $integration.googleSheets.writeDataToCells(
-            "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
-            "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
-            "Лист1",
-            [{values: [$session.name, $session.age, $session.city, $session.resume], cell: "A2"}]
-            );
+            var cell = "";
+            var i = 0;
+            $temp.res = $integration.googleSheets.readDataFromCells(
+                "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                "Лист1",
+                ["A1"]);
+                
+            while ($temp.res[0].value != null) {
+                i ++; 
+                cell = "A" + i.toString()
+                $temp.res = $integration.googleSheets.readDataFromCells(
+                "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                "Лист1",
+                [cell]);
+                
+                if ($temp.res[0].value == null) {
+                    continue
+                    }
+                
+                else {
+                    $integration.googleSheets.writeDataToCells(
+                        "7f69942c-8692-4dad-aadb-825ce2e7eb1d",
+                        "1jG3AHyj5jYqQm22klkcWlfImk-uIaoZzw-TtDiUTKlw",
+                        "Лист1",
+                        [{values: [$session.name, $session.age, $session.city, $session.resume, $temp.res1[0].value], cell:  cell}]
+                        )}};
 
     state: Error
         a: Error
+
+    state: Special
+        a: Вы знаете, какая специальность вам интересна?
+        buttons:
+            "Да" -> /Know
+            "Нет" -> /dont know

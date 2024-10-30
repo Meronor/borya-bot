@@ -12,7 +12,8 @@
     "extendedSettings" : {
       "classificationAlgorithmVersion" : 1.0,
       "tokenizerEngine" : "mystem",
-      "useShared" : false
+      "useShared" : true,
+      "zflPatternsEnabled" : true
     },
     "shared" : false,
     "validation" : {

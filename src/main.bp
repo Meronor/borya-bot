@@ -1,15 +1,104 @@
 {
   "positions" : [ {
     "id" : "/Language",
-    "x" : 290,
-    "y" : 1261
+    "x" : -138,
+    "y" : 1214
   }, {
     "id" : "/Russian",
-    "x" : 1070,
-    "y" : 809
+    "x" : 693,
+    "y" : 753
   }, {
     "id" : "/English",
+    "x" : 738,
+    "y" : 1977
+  }, {
+    "id" : "/Error",
+    "x" : 643,
+    "y" : -337
+  }, {
+    "id" : "/Test",
+    "x" : 3597,
+    "y" : 290
+  }, {
+    "id" : "/Resume_1",
+    "x" : 3150,
+    "y" : 338
+  }, {
+    "id" : "/City_1",
+    "x" : 2691,
+    "y" : 345
+  }, {
+    "id" : "/Age_1",
+    "x" : 2149,
+    "y" : 409
+  }, {
+    "id" : "/dont know",
+    "x" : 1613,
+    "y" : 399
+  }, {
+    "id" : "/Experiance",
+    "x" : 3804,
+    "y" : 1301
+  }, {
+    "id" : "/Резюме",
+    "x" : 3233,
+    "y" : 1291
+  }, {
+    "id" : "/City",
+    "x" : 2847,
+    "y" : 1285
+  }, {
+    "id" : "/Age",
+    "x" : 2410,
+    "y" : 1285
+  }, {
+    "id" : "/Know",
+    "x" : 1700,
+    "y" : 1456
+  }, {
+    "id" : "/NewState",
+    "x" : 44,
+    "y" : 212
+  }, {
+    "id" : "/Russian/Hello",
+    "x" : 290,
+    "y" : 651
+  }, {
+    "id" : "/Russian/Bye",
+    "x" : 290,
+    "y" : 1253
+  }, {
+    "id" : "/Russian/NoMatch",
+    "x" : 290,
+    "y" : 1912
+  }, {
+    "id" : "/Russian/KnowledgeBase",
+    "x" : 290,
+    "y" : 2593
+  }, {
+    "id" : "/Russian/noEmail",
+    "x" : 1850,
+    "y" : 1603
+  }, {
+    "id" : "/Russian/emailButtons",
     "x" : 1070,
-    "y" : 1713
+    "y" : 1912
+  }, {
+    "id" : "/Russian/inputQuestion",
+    "x" : 1850,
+    "y" : 2221
+  }, {
+    "id" : "/Russian/inputEmail",
+    "x" : 2630,
+    "y" : 2221
+  }, {
+    "id" : "/Russian/email",
+    "x" : 3410,
+    "y" : 2221
+  }, {
+    "id" : "/Special",
+    "name" : "Special",
+    "x" : 1143,
+    "y" : 885
   } ]
 }
